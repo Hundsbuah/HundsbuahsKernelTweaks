@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Hundsbuahs Kernel Tweaks</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_section1">CPU Section</string>
+    <string name="title_section2">GPU Section</string>
+    <string name="title_section3">Gaming Mode</string>
+    <string name="section1_cpu1">CPU1 Frequency in kHz</string>
+    <string name="section1_cpu2">CPU2 Frequency in kHz</string>
+    <string name="section1_cpu3">CPU3 Frequency in kHz</string>
+    <string name="section1_cpu4">CPU4 Frequency in kHz</string>
+    <string name="section1_bt_apply">Apply current CPU Limits</string>
+    <string name="section1_bt_read">Read current CPU Limits</string>
+    <string name="section2_bt_apply">Apply current GPU Limit</string>
+    <string name="section2_bt_read">Read current GPU Limit</string>
+    <string name="section2_gpu">GPU Frequency in MHz</string>
+    <string name="section3_gamingmode_info">WARNING: AT THE MOMENT ONLY FOR TF700T USERS!!!\n\nOverclocking tablets is good for daily work to make the tablet faster for most of your tasks. But when playing games, overclocking leads to a hot and restarting device. With this button you can active the &quot;Gaming Mode&quot; which clocks down your CPU and GPU frequencies which are best for gaming.</string>
+    <string name="section3_gamingmode">Yes, Set CPU and GPU Frequencies for Gaming Mode</string>
+    <string name="section1_savetoasuspowersaver">Save to PowerSaver</string>
+    <string name="section1_savetoasusnormalmode">Save to Performance</string>
+    <string name="section1_savetoasusbalancedmode">Save to Balanced</string>
+    <string name="current_settings">Current Settings</string>
+    <string name="asus_powersavermode">PowerSaver Mode</string>
+    <string name="asus_balancedmode">Balanced Mode</string>
+    <string name="asus_performancemode">Performance Mode</string>
+    <string name="section1_bt_readfromasuspowersavermode">Read PowerSaver</string>
+    <string name="section1_bt_readfromasusbalancedmode">Read Balanced</string>
+    <string name="section1_bt_readfromasusperformancemode">Read Performance</string>
+</resources>

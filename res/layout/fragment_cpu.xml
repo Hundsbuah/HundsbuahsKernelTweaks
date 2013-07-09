@@ -1,0 +1,392 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity$DummySectionFragment" >
+
+    <TextView
+        android:id="@+id/section_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    
+    <TextView
+        android:id="@+id/section1_current_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="65dp"
+        android:text="@string/current_settings"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    <TextView
+        android:id="@+id/section1_cpu1_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/section1_cpu1" />
+
+    <TextView
+        android:id="@+id/section1_cpu2_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="180dp"
+        android:text="@string/section1_cpu2" />
+
+    <TextView
+        android:id="@+id/section1_cpu3_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="260dp"
+        android:text="@string/section1_cpu3" />
+
+    <TextView
+        android:id="@+id/section1_cpu4_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="340dp"
+        android:text="@string/section1_cpu4" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="125dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="205dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="285dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="365dp"
+        android:ems="10"
+        android:inputType="number" />
+    
+    <Button
+        android:id="@+id/section1_bt_apply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="430dp"
+        android:text="@string/section1_bt_apply" />
+
+    <Button
+        android:id="@+id/section1_bt_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/section1_bt_apply"
+        android:layout_alignRight="@+id/section1_bt_apply"
+        android:layout_marginTop="480dp"
+        android:text="@string/section1_bt_read" />
+    
+    <TextView
+        android:id="@+id/section1_asus_powersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="300dp"
+        android:layout_marginTop="65dp"
+        android:text="@string/asus_powersavermode"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    <TextView
+        android:id="@+id/section1_text_cpu1_asuspowersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/section1_cpu1" />
+
+    <TextView
+        android:id="@+id/section1_text_cpu2_asuspowersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="180dp"
+        android:text="@string/section1_cpu2" />
+
+    <TextView
+        android:id="@+id/section1_text_cpu3_asuspowersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="260dp"
+        android:text="@string/section1_cpu3" />
+
+    <TextView
+        android:id="@+id/section1_text_cpu4_asuspowersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="340dp"
+        android:text="@string/section1_cpu4" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu1_asuspowersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="125dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu2_asuspowersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="205dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu3_asuspowersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="285dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu4_asuspowersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="365dp"
+        android:ems="10"
+        android:inputType="number" />
+    
+    <Button
+        android:id="@+id/section1_bt_asuspowersavermode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="350dp"
+        android:layout_marginTop="430dp"
+        android:text="@string/section1_savetoasuspowersaver" />
+    
+    <Button
+        android:id="@+id/section1_bt_asuspowersavermode_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/section1_bt_asuspowersavermode"
+        android:layout_alignRight="@+id/section1_bt_asuspowersavermode"
+        android:layout_marginTop="480dp"
+        android:text="@string/section1_bt_readfromasuspowersavermode" />
+    
+    <TextView
+        android:id="@+id/section1_asus_balancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="550dp"
+        android:layout_marginTop="65dp"
+        android:text="@string/asus_balancedmode"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    <TextView
+        android:id="@+id/section1_text_cpu1_asusbalancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/section1_cpu1" />
+
+    <TextView
+        android:id="@+id/section1_text_cpu2_asusbalancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="180dp"
+        android:text="@string/section1_cpu2" />
+
+    <TextView
+        android:id="@+id/section1_text_cpu3_asusbalancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="260dp"
+        android:text="@string/section1_cpu3" />
+
+    <TextView
+        android:id="@+id/section1_text_cpu4_asusbalancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="340dp"
+        android:text="@string/section1_cpu4" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu1_asusbalancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="125dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu2_asusbalancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="205dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu3_asusbalancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="285dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu4_asusbalancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="365dp"
+        android:ems="10"
+        android:inputType="number" />
+    
+    <Button
+        android:id="@+id/section1_bt_asusbalancedmode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600dp"
+        android:layout_marginTop="430dp"
+        android:text="@string/section1_savetoasusbalancedmode" />
+    
+    <Button
+        android:id="@+id/section1_bt_asusbalancedmode_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/section1_bt_asusbalancedmode"
+        android:layout_alignRight="@+id/section1_bt_asusbalancedmode"
+        android:layout_marginTop="480dp"
+        android:text="@string/section1_bt_readfromasusbalancedmode" />
+    
+    <TextView
+        android:id="@+id/section1_asus_performancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="780dp"
+        android:layout_marginTop="65dp"
+        android:text="@string/asus_performancemode"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    <TextView
+        android:id="@+id/section1_text_cpu1_asusperformancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="830dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/section1_cpu1" />
+
+    <TextView
+        android:id="@+id/section1_text_cpu2_asusperformancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="830dp"
+        android:layout_marginTop="180dp"
+        android:text="@string/section1_cpu2" />
+
+    <TextView
+        android:id="@+id/section1_text_cpu3_asusperformancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="830dp"
+        android:layout_marginTop="260dp"
+        android:text="@string/section1_cpu3" />
+
+    <TextView
+        android:id="@+id/section1_text_cpu4_asusperformancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="830dp"
+        android:layout_marginTop="340dp"
+        android:text="@string/section1_cpu4" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu1_asusperformancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="830dp"
+        android:layout_marginTop="125dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu2_asusperformancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="830dp"
+        android:layout_marginTop="205dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu3_asusperformancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="830dp"
+        android:layout_marginTop="285dp"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/section1_sp_cpu4_asusperformancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="830dp"
+        android:layout_marginTop="365dp"
+        android:ems="10"
+        android:inputType="number" />
+    
+    <Button
+        android:id="@+id/section1_bt_asusperformancemode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="830dp"
+        android:layout_marginTop="430dp"
+        android:text="@string/section1_savetoasusnormalmode" />
+    
+    <Button
+        android:id="@+id/section1_bt_asusperformancemode_read"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/section1_bt_asusperformancemode"
+        android:layout_alignRight="@+id/section1_bt_asusperformancemode"
+        android:layout_marginTop="480dp"
+        android:text="@string/section1_bt_readfromasusperformancemode" />
+
+</RelativeLayout>
