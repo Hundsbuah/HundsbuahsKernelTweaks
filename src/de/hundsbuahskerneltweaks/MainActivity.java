@@ -60,7 +60,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	public Spinner gpu_selection_box_asusperformancemode;
 
 	public Spinner gpu_selection_box;
-	
+	public Spinner available_governors;
+
 	private Button section1_bt_apply;
 	private Button section1_bt_asuspowersavermode;
 	private Button section1_bt_asusbalancedmode;
@@ -81,6 +82,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	private Button section2_bt_asusperformancemode_read;
 	
     private Button section3_bt_gamingmode;
+    
+    private Button section4_bt_set;
+
 	private int num_current_messageboxes = 0;
 	final int MAX_CURRENT_MESSAGE_BOXES = 2;
 	
@@ -96,7 +100,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private Helper helper = new Helper(this);
     private CurrentSettings cs = new CurrentSettings(this);
     private AsusPowermodes apm = new AsusPowermodes(this);
-    
+    private Governor gov = new Governor(this);
+
 	public void showMessageBox(String str, int showAlways)
 	{
 		num_current_messageboxes++;
@@ -225,7 +230,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		@Override
 		public int getCount() {
 			// Show 3 total pages.
-			return 3;
+			return 4;
 		}
 
 		@Override
@@ -238,6 +243,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				return getString(R.string.title_section2).toUpperCase(l);
 			case 2:
 				return getString(R.string.title_section3).toUpperCase(l);
+			case 3:
+				return getString(R.string.title_section4).toUpperCase(l);
 			}
 			return null;
 		}
@@ -352,7 +359,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 tv_label.setText(helper.getKernelInfo());
         	}
 
-        	else
+        	else if(getArguments().getInt(ARG_SECTION_NUMBER) == 3)
         	{
                 rootView = inflater.inflate(R.layout.fragment_gamingmode, container, false);
         		tv_label = (TextView) rootView.findViewById(R.id.section_label);
@@ -361,6 +368,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		section3_bt_gamingmode.setOnClickListener(this);
 
         		tv_label.setText(helper.getKernelInfo());
+        	}
+        	
+        	else if(getArguments().getInt(ARG_SECTION_NUMBER) == 4)
+        	{
+        		rootView = inflater.inflate(R.layout.governor, container, false);   
+        		tv_label = (TextView) rootView.findViewById(R.id.section_label);
+        		available_governors = (Spinner) rootView.findViewById(R.id.section4_sp_governors);
+        		section4_bt_set = (Button) rootView.findViewById(R.id.section4_bt_set_governor);
+        		section4_bt_set.setOnClickListener(this);
+        		
+        		gov.getGovernors();
         	}
         	
             return rootView;
@@ -646,6 +664,25 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    		Toast.makeText(getApplicationContext(), e.getMessage().toString(), Toast.LENGTH_SHORT).show();
 		    	}
 		        break;
+		    case R.id.section4_bt_set_governor:
+		    	if(gov.setGovernor() == 0)
+		    	{
+			    	SystemClock.sleep(200);
+			    	if(gov.getGovernors() == 0)
+		    		{
+		    			Toast.makeText(getApplicationContext(), "New Governor " + available_governors.getSelectedItem().toString() + " successfully set!", Toast.LENGTH_SHORT).show();
+		    		}
+			    	else
+			    	{
+		    			Toast.makeText(getApplicationContext(), "Error setting new Governor!", Toast.LENGTH_SHORT).show();
+			    	}
+		    	}
+		    	else
+		    	{
+	    			Toast.makeText(getApplicationContext(), "Error setting new Governor!", Toast.LENGTH_SHORT).show();
+		    	}
+
+		    	break;
 		    default:
 		       break;
 		    }   

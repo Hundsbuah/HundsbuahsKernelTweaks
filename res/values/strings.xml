@@ -27,4 +27,7 @@
     <string name="section1_bt_readfromasuspowersavermode">Read PowerSaver</string>
     <string name="section1_bt_readfromasusbalancedmode">Read Balanced</string>
     <string name="section1_bt_readfromasusperformancemode">Read Performance</string>
+    <string name="section4_used_gov">Used Governor</string>
+    <string name="section4_set_gov">Set Governor</string>
+    <string name="title_section4">CPU Governor</string>
 </resources>
