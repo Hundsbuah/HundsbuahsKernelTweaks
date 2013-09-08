@@ -1,29 +1,29 @@
 package de.hundsbuahskerneltweaks;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.os.SystemClock;
+import de.hundsbuahskerneltweaks.MainActivity.enOnBoot;
 
 public class Governor_IOscheduler
 {
 	private MainActivity ma;
 	private AndroidBash ab;
+	private InitdHelper initd;
 	public List<String> governors = new ArrayList<String>();
 	public List<String> ioschedulers = new ArrayList<String>();
-	private List<String> initdappfilecontent = new ArrayList<String>();
+	final public String ioscheduler_0 = "/sys/block/mmcblk0/queue/scheduler";
+	final public String ioscheduler_1 = "/sys/block/mmcblk1/queue/scheduler";
+	final public String governor = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor";
 	
 	public Governor_IOscheduler(MainActivity ma)
 	{
 		this.ma = ma;
 		ab = new AndroidBash(ma);
+		initd = new InitdHelper(ma);
 	}
 	
 	public int setGovernor()
@@ -95,66 +95,20 @@ public class Governor_IOscheduler
 		return 0;
 	}
 	
-	public int saveToInitdFile()
+	public int saveToInitdFile(enOnBoot status)
 	{
-		BufferedWriter initdappfile_bufferedwriter = null;
-		initdappfilecontent.clear();
-		
-		ab.writeSuCommand("busybox mount -o remount,rw /dev/block/mmcblk0p1 /system");
-		SystemClock.sleep(200);
 		try
 		{
-
-			ab.writeSuCommand("rm -f /system/etc/init.d/99hundsapp");
-			ab.writeSuCommand("echo \"\" > /system/etc/init.d/99hundsapp");
-			SystemClock.sleep(200);
-			ab.writeSuCommand("chmod 777 /system/etc/init.d/99hundsapp");
-			SystemClock.sleep(50);
-			initdappfile_bufferedwriter = new BufferedWriter(new FileWriter(new File("/system/etc/init.d/99hundsapp")));
-			
-			initdappfile_bufferedwriter.write("#!/system/bin/sh\n");
-			initdappfile_bufferedwriter.write("echo " + ma.available_ioschedulers.getSelectedItem().toString().replace("[", "").replace("]", "") + " > /sys/block/mmcblk0/queue/scheduler\n");
-			initdappfile_bufferedwriter.write("echo " + ma.available_ioschedulers.getSelectedItem().toString().replace("[", "").replace("]", "") + " > /sys/block/mmcblk1/queue/scheduler\n");
-			initdappfile_bufferedwriter.write("echo " + ma.available_governors.getSelectedItem().toString() + " > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor");
-			
-			return 0;
+			if(initd.updateInitd(ma.available_ioschedulers.getSelectedItem().toString().replace("[", "").replace("]", ""), ioscheduler_0, status) == 0)
+				if(initd.updateInitd(ma.available_ioschedulers.getSelectedItem().toString().replace("[", "").replace("]", ""), ioscheduler_1, status) == 0)
+					if(initd.updateInitd(ma.available_governors.getSelectedItem().toString(), governor, status) == 0)
+						return 0;
+			return 1;
 		}
 		catch (Exception e)
 		{
 			ma.showMessageBox("Cant write init.d file!", 0);
 			return 1;
-		}
-		finally
-		{
-			// close the file.
-			try
-			{
-				initdappfile_bufferedwriter.close();
-				return 0;
-			}
-			catch (Exception e)
-			{
-
-			}
-		}
-	}
-	
-	public int deleteInitdFile()
-	{
-		ab.writeSuCommand("busybox mount -o remount,rw /dev/block/mmcblk0p1 /system");
-		SystemClock.sleep(200);
-		ab.writeSuCommand("rm -f /system/etc/init.d/99hundsapp");
-		SystemClock.sleep(200);
-
-		File checkinitd_file = new File("/system/etc/init.d/99hundsapp");
-
-		if(checkinitd_file.exists())
-		{
-			return 1;
-		}
-		else
-		{
-			return 0;
 		}
 	}
 }

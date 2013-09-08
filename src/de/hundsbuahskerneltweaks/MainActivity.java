@@ -116,12 +116,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
    	   GPU,
     }
     
+    public enum enOnBoot
+    {
+	   DISABLE,
+   	   ENABLE,
+    }   
+    
     private AndroidBash ab;
     private Helper helper;
     private CurrentSettings cs;
     private AsusPowermodes apm;
     private Governor_IOscheduler gov_iosched;
-
+    private InitdHelper initd;
+    
 	public void showMessageBox(String str, int showAlways)
 	{
 		num_current_messageboxes++;
@@ -325,6 +332,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    cs = new CurrentSettings(ma);
 		    apm = new AsusPowermodes(ma);
 		    gov_iosched = new Governor_IOscheduler(ma);
+		    initd = new InitdHelper(ma);
+		    
         	if(getArguments().getInt(ARG_SECTION_NUMBER) == 1)
         	{
         		rootView = inflater.inflate(R.layout.fragment_cpu, container, false);
@@ -434,11 +443,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		section4_bt_set_gov.setOnClickListener(this);
         		section4_bt_set_iosched.setOnClickListener(this);
         		tv_label.setText(helper.getKernelInfo());
-        		File checkinitd_file = new File("/system/etc/init.d/99hundsapp");
         		gov_iosched.getGovernors();
         		gov_iosched.getIOSchedulers();
         		
-        		if(checkinitd_file.exists())
+        		if(initd.checkIfInterfaceIsActivatedOnBoot(gov_iosched.ioscheduler_0) == 1)
         		{
         			section4_bt_set_on_boot.setChecked(true);
         		}
@@ -803,7 +811,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    case R.id.section4_bt_set_on_boot:
 		    	if(section4_bt_set_on_boot.isChecked() == true)
 		    	{
-			    	if(gov_iosched.saveToInitdFile() == 0)
+			    	if(gov_iosched.saveToInitdFile(enOnBoot.ENABLE) == 0)
 			    	{
 				    	SystemClock.sleep(200);
 				    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
@@ -835,7 +843,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			    case R.id.section4_bt_set_on_boot:
 			    	if(section4_bt_set_on_boot.isChecked() == true)
 			    	{
-				    	if(gov_iosched.saveToInitdFile() == 0)
+				    	if(gov_iosched.saveToInitdFile(enOnBoot.ENABLE) == 0)
 				    	{
 					    	SystemClock.sleep(200);
 					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
@@ -850,10 +858,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			    	}
 			    	if(section4_bt_set_on_boot.isChecked() == false)
 			    	{
-			    		if(gov_iosched.deleteInitdFile() == 0)
+			    		if(gov_iosched.saveToInitdFile(enOnBoot.DISABLE) == 0)
 			    		{
 					    	SystemClock.sleep(200);
-				    		Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully deleted!", Toast.LENGTH_SHORT).show();
+					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
 					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
 			    		}
 			    		else
