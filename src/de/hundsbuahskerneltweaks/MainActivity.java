@@ -1,14 +1,18 @@
 package de.hundsbuahskerneltweaks;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.Application;
 import android.app.FragmentTransaction;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
@@ -23,9 +27,17 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.stericson.RootTools.*;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 		
@@ -61,6 +73,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 	public Spinner gpu_selection_box;
 	public Spinner available_governors;
+	public Spinner available_ioschedulers;
 
 	private Button section1_bt_apply;
 	private Button section1_bt_asuspowersavermode;
@@ -83,8 +96,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
     private Button section3_bt_gamingmode;
     
-    private Button section4_bt_set;
+    private Button section4_bt_set_gov;
+    private Button section4_bt_set_iosched;
+    private Switch section4_bt_set_on_boot;
 
+    private TableLayout section5_tablelayout;
+    
+    private MainActivity ma = this;
+    private int first_start = 1;
+    
 	private int num_current_messageboxes = 0;
 	final int MAX_CURRENT_MESSAGE_BOXES = 2;
 	
@@ -96,11 +116,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
    	   GPU,
     }
     
-    private AndroidBash ab = new AndroidBash(this);
-    private Helper helper = new Helper(this);
-    private CurrentSettings cs = new CurrentSettings(this);
-    private AsusPowermodes apm = new AsusPowermodes(this);
-    private Governor gov = new Governor(this);
+    private AndroidBash ab;
+    private Helper helper;
+    private CurrentSettings cs;
+    private AsusPowermodes apm;
+    private Governor_IOscheduler gov_iosched;
 
 	public void showMessageBox(String str, int showAlways)
 	{
@@ -229,8 +249,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
-			return 4;
+			// Show 5 total pages.
+			return 5;
 		}
 
 		@Override
@@ -245,6 +265,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				return getString(R.string.title_section3).toUpperCase(l);
 			case 3:
 				return getString(R.string.title_section4).toUpperCase(l);
+			case 4:
+				return getString(R.string.title_section5).toUpperCase(l);
 			}
 			return null;
 		}
@@ -255,7 +277,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * displays dummy text.
 	 */
 	@SuppressLint("ValidFragment")
-	public class SectionFragment extends Fragment implements OnClickListener {
+	public class SectionFragment extends Fragment implements OnClickListener, OnCheckedChangeListener {
 		/**
 		 * The fragment argument representing the section number for this
 		 * fragment.
@@ -271,8 +293,38 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-        	
             
+        	int retries = 25;
+
+			if(first_start == 1)
+			{
+				first_start = 0;
+				
+				if (RootTools.isRootAvailable())
+				{
+					while (RootTools.isAccessGiven() == false && retries != 0)
+					{
+						SystemClock.sleep(500);
+						retries--;
+					}
+					if(retries == 0)
+					{
+						showMessageBox("No su rights granted - Exiting!", 1);
+						finish();
+					}
+				}
+				else
+				{
+					showMessageBox("No SU found!", 1);
+					finish();
+				}
+			}
+			
+		    ab = new AndroidBash(ma);
+		    helper = new Helper(ma);
+		    cs = new CurrentSettings(ma);
+		    apm = new AsusPowermodes(ma);
+		    gov_iosched = new Governor_IOscheduler(ma);
         	if(getArguments().getInt(ARG_SECTION_NUMBER) == 1)
         	{
         		rootView = inflater.inflate(R.layout.fragment_cpu, container, false);
@@ -372,13 +424,61 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	
         	else if(getArguments().getInt(ARG_SECTION_NUMBER) == 4)
         	{
-        		rootView = inflater.inflate(R.layout.governor, container, false);   
+        		rootView = inflater.inflate(R.layout.governor_iosched, container, false);   
         		tv_label = (TextView) rootView.findViewById(R.id.section_label);
         		available_governors = (Spinner) rootView.findViewById(R.id.section4_sp_governors);
-        		section4_bt_set = (Button) rootView.findViewById(R.id.section4_bt_set_governor);
-        		section4_bt_set.setOnClickListener(this);
+        		available_ioschedulers = (Spinner) rootView.findViewById(R.id.section4_sp_ioschedulers);
+        		section4_bt_set_gov = (Button) rootView.findViewById(R.id.section4_bt_set_governor);
+        		section4_bt_set_iosched = (Button) rootView.findViewById(R.id.section4_bt_set_ioscheduler);
+        		section4_bt_set_on_boot = (Switch) rootView.findViewById(R.id.section4_bt_set_on_boot);
+        		section4_bt_set_gov.setOnClickListener(this);
+        		section4_bt_set_iosched.setOnClickListener(this);
+        		tv_label.setText(helper.getKernelInfo());
+        		File checkinitd_file = new File("/system/etc/init.d/99hundsapp");
+        		gov_iosched.getGovernors();
+        		gov_iosched.getIOSchedulers();
         		
-        		gov.getGovernors();
+        		if(checkinitd_file.exists())
+        		{
+        			section4_bt_set_on_boot.setChecked(true);
+        		}
+        		else
+        		{
+        			section4_bt_set_on_boot.setChecked(false);
+        		}
+        		
+        		section4_bt_set_on_boot.setOnCheckedChangeListener(this);
+        	}
+        	
+        	else if(getArguments().getInt(ARG_SECTION_NUMBER) == 5)
+        	{
+        		rootView = inflater.inflate(R.layout.uv_cpu, container, false);
+        		tv_label = (TextView) rootView.findViewById(R.id.section_label);
+        		tv_label.setText(helper.getKernelInfo());
+        		section5_tablelayout = (TableLayout) rootView.findViewById(R.id.section5_tablelayout);
+			    TableRow tr = new TableRow(getApplicationContext());
+				LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+				tr.setLayoutParams(lp);
+				
+				EditText tvLeft = new EditText(getApplicationContext());
+				tvLeft.setLayoutParams(lp);
+				tvLeft.setBackgroundColor(Color.BLUE);
+				tvLeft.setText("Comming");
+				EditText tvCenter = new EditText(getApplicationContext());
+				tvCenter.setLayoutParams(lp);
+				tvCenter.setBackgroundColor(Color.GREEN);
+				tvCenter.setText("soon");
+				EditText tvRight = new EditText(getApplicationContext());
+				tvRight.setLayoutParams(lp);
+				tvRight.setBackgroundColor(Color.RED);
+				tvRight.setText("!!!!");
+				
+				tr.addView(tvLeft);
+				tr.addView(tvCenter);
+				tr.addView(tvRight);
+				
+				section5_tablelayout.addView(tr, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        		
         	}
         	
             return rootView;
@@ -665,10 +765,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    	}
 		        break;
 		    case R.id.section4_bt_set_governor:
-		    	if(gov.setGovernor() == 0)
+		    	if(gov_iosched.setGovernor() == 0)
 		    	{
 			    	SystemClock.sleep(200);
-			    	if(gov.getGovernors() == 0)
+			    	if(gov_iosched.getGovernors() == 0)
 		    		{
 		    			Toast.makeText(getApplicationContext(), "New Governor " + available_governors.getSelectedItem().toString() + " successfully set!", Toast.LENGTH_SHORT).show();
 		    		}
@@ -681,12 +781,92 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    	{
 	    			Toast.makeText(getApplicationContext(), "Error setting new Governor!", Toast.LENGTH_SHORT).show();
 		    	}
-
+		    	break;
+		    case R.id.section4_bt_set_ioscheduler:
+		    	if(gov_iosched.setIOScheduler() == 0)
+		    	{
+			    	SystemClock.sleep(200);
+			    	if(gov_iosched.getIOSchedulers() == 0)
+		    		{
+		    			Toast.makeText(getApplicationContext(), "New I/O Scheduler " + available_ioschedulers.getSelectedItem().toString() + " successfully set!", Toast.LENGTH_SHORT).show();
+		    		}
+			    	else
+			    	{
+		    			Toast.makeText(getApplicationContext(), "Error setting new I/O Scheduler!", Toast.LENGTH_SHORT).show();
+			    	}
+		    	}
+		    	else
+		    	{
+	    			Toast.makeText(getApplicationContext(), "Error setting new I/O Scheduler!", Toast.LENGTH_SHORT).show();
+		    	}
+		    	break;
+		    case R.id.section4_bt_set_on_boot:
+		    	if(section4_bt_set_on_boot.isChecked() == true)
+		    	{
+			    	if(gov_iosched.saveToInitdFile() == 0)
+			    	{
+				    	SystemClock.sleep(200);
+				    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
+				    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    	}
+			    	else
+			    	{
+			    		SystemClock.sleep(200);
+		    			Toast.makeText(getApplicationContext(), "Error writing \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
+		    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    	}
+		    	}
+		    	else
+		    	{
+		    		
+		    	}
 		    	break;
 		    default:
 		       break;
 		    }   
 
+		}
+
+		@Override
+		public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+			// TODO Auto-generated method stub
+	    	switch (arg0.getId())
+	    	{
+			    case R.id.section4_bt_set_on_boot:
+			    	if(section4_bt_set_on_boot.isChecked() == true)
+			    	{
+				    	if(gov_iosched.saveToInitdFile() == 0)
+				    	{
+					    	SystemClock.sleep(200);
+					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
+					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+				    	}
+				    	else
+				    	{
+				    		SystemClock.sleep(200);
+			    			Toast.makeText(getApplicationContext(), "Error writing \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
+			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+				    	}
+			    	}
+			    	if(section4_bt_set_on_boot.isChecked() == false)
+			    	{
+			    		if(gov_iosched.deleteInitdFile() == 0)
+			    		{
+					    	SystemClock.sleep(200);
+				    		Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully deleted!", Toast.LENGTH_SHORT).show();
+					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    		}
+			    		else
+			    		{
+				    		SystemClock.sleep(200);
+			    			Toast.makeText(getApplicationContext(), "Error deleting \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
+			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    		}
+			    	}
+			    	break;
+			    default:
+			       break;
+	    	}
 		}
 	}
 

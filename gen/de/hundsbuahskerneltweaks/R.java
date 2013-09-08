@@ -26,7 +26,7 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f080046;
+        public static final int action_settings=0x7f08004b;
         public static final int pager=0x7f080000;
         public static final int section1_asus_balancedmode=0x7f080018;
         public static final int section1_asus_performancemode=0x7f080023;
@@ -94,8 +94,13 @@ public final class R {
         public static final int section2_text_gpu_asuspowersavermode=0x7f080035;
         public static final int section3_bt_gamingmode=0x7f08002f;
         public static final int section4_bt_set_governor=0x7f080045;
+        public static final int section4_bt_set_ioscheduler=0x7f080048;
+        public static final int section4_bt_set_on_boot=0x7f080049;
         public static final int section4_governors=0x7f080043;
+        public static final int section4_ioschedulers=0x7f080046;
         public static final int section4_sp_governors=0x7f080044;
+        public static final int section4_sp_ioschedulers=0x7f080047;
+        public static final int section5_tablelayout=0x7f08004a;
         public static final int section_label=0x7f080001;
     }
     public static final class layout {
@@ -103,7 +108,8 @@ public final class R {
         public static final int fragment_cpu=0x7f030001;
         public static final int fragment_gamingmode=0x7f030002;
         public static final int fragment_gpu=0x7f030003;
-        public static final int governor=0x7f030004;
+        public static final int governor_iosched=0x7f030004;
+        public static final int uv_cpu=0x7f030005;
     }
     public static final class menu {
         public static final int main=0x7f070000;
@@ -133,11 +139,16 @@ public final class R {
         public static final int section3_gamingmode=0x7f05000f;
         public static final int section3_gamingmode_info=0x7f05000e;
         public static final int section4_set_gov=0x7f05001b;
+        public static final int section4_set_ioshed=0x7f05001d;
+        public static final int section4_set_on_boot=0x7f05001f;
+        public static final int section4_switch_string=0x7f050021;
         public static final int section4_used_gov=0x7f05001a;
+        public static final int section4_used_iosched=0x7f05001e;
         public static final int title_section1=0x7f050002;
         public static final int title_section2=0x7f050003;
         public static final int title_section3=0x7f050004;
         public static final int title_section4=0x7f05001c;
+        public static final int title_section5=0x7f050020;
     }
     public static final class style {
         /** 

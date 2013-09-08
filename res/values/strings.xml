@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Hundsbuahs Kernel Tweaks</string>
+    <string name="app_name">Hunds App</string>
     <string name="action_settings">Settings</string>
     <string name="title_section1">CPU Section</string>
     <string name="title_section2">GPU Section</string>
@@ -29,5 +29,10 @@
     <string name="section1_bt_readfromasusperformancemode">Read Performance</string>
     <string name="section4_used_gov">Used Governor</string>
     <string name="section4_set_gov">Set Governor</string>
-    <string name="title_section4">CPU Governor</string>
+    <string name="title_section4">CPU Governor &amp; I/O Scheduler</string>
+    <string name="section4_set_ioshed">Set I/O Scheduler</string>
+    <string name="section4_used_iosched">Used I/O Scheduler</string>
+    <string name="section4_set_on_boot">Load these settings on each boot</string>
+    <string name="title_section5">CPU UV</string>
+    <string name="section4_switch_string">Load settings at boot?</string>
 </resources>
