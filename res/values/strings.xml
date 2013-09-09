@@ -35,4 +35,7 @@
     <string name="section4_set_on_boot">Load these settings on each boot</string>
     <string name="title_section5">CPU UV</string>
     <string name="section4_switch_string">Load settings at boot?</string>
+    <string name="section5_switch_string">Load settings at boot?</string>
+    <string name="section5_set_on_boot">Load these settings on each boot</string>
+    <string name="section5_bt_apply">Apply Voltages!</string>
 </resources>

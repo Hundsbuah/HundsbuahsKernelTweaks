@@ -1,6 +1,7 @@
 package de.hundsbuahskerneltweaks;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import android.annotation.SuppressLint;
@@ -30,6 +31,10 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TableLayout;
@@ -40,7 +45,8 @@ import android.widget.Toast;
 import com.stericson.RootTools.*;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
-		
+	
+	final int MAX_DVFS_ENTRYS = 42;
 	public String current_freq_core1;
 	public String current_freq_core2;
 	public String current_freq_core3;
@@ -100,8 +106,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private Button section4_bt_set_iosched;
     private Switch section4_bt_set_on_boot;
 
-    private TableLayout section5_tablelayout;
-    
+    private LinearLayout section5_tablelayout;
+	public List<TextView> section5_tv = new ArrayList<TextView>();
+	public List<SeekBar> section5_sb = new ArrayList<SeekBar>();
+    private Button section5_bt_apply;
+    private Switch section5_bt_set_on_boot;
+    private final int section5_bt_apply_id = 10001;
+    private final int section5_bt_set_on_boot_id = 10002;
+
     private MainActivity ma = this;
     private int first_start = 1;
     
@@ -128,7 +140,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private AsusPowermodes apm;
     private Governor_IOscheduler gov_iosched;
     private InitdHelper initd;
-    
+    private Undervolting uv;
 	public void showMessageBox(String str, int showAlways)
 	{
 		num_current_messageboxes++;
@@ -284,7 +296,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * displays dummy text.
 	 */
 	@SuppressLint("ValidFragment")
-	public class SectionFragment extends Fragment implements OnClickListener, OnCheckedChangeListener {
+	public class SectionFragment extends Fragment implements OnClickListener, OnCheckedChangeListener, OnSeekBarChangeListener {
 		/**
 		 * The fragment argument representing the section number for this
 		 * fragment.
@@ -333,6 +345,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    apm = new AsusPowermodes(ma);
 		    gov_iosched = new Governor_IOscheduler(ma);
 		    initd = new InitdHelper(ma);
+		    uv = new Undervolting(ma);
 		    
         	if(getArguments().getInt(ARG_SECTION_NUMBER) == 1)
         	{
@@ -463,30 +476,69 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		rootView = inflater.inflate(R.layout.uv_cpu, container, false);
         		tv_label = (TextView) rootView.findViewById(R.id.section_label);
         		tv_label.setText(helper.getKernelInfo());
-        		section5_tablelayout = (TableLayout) rootView.findViewById(R.id.section5_tablelayout);
-			    TableRow tr = new TableRow(getApplicationContext());
-				LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-				tr.setLayoutParams(lp);
-				
-				EditText tvLeft = new EditText(getApplicationContext());
-				tvLeft.setLayoutParams(lp);
-				tvLeft.setBackgroundColor(Color.BLUE);
-				tvLeft.setText("Comming");
-				EditText tvCenter = new EditText(getApplicationContext());
-				tvCenter.setLayoutParams(lp);
-				tvCenter.setBackgroundColor(Color.GREEN);
-				tvCenter.setText("soon");
-				EditText tvRight = new EditText(getApplicationContext());
-				tvRight.setLayoutParams(lp);
-				tvRight.setBackgroundColor(Color.RED);
-				tvRight.setText("!!!!");
-				
-				tr.addView(tvLeft);
-				tr.addView(tvCenter);
-				tr.addView(tvRight);
-				
-				section5_tablelayout.addView(tr, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        		section5_tablelayout = (LinearLayout) rootView.findViewById(R.id.section5_linearlayout);
+        		section5_tablelayout.setHorizontalScrollBarEnabled(true);
+        		section5_tablelayout.setVerticalScrollBarEnabled(true);
         		
+        		int num_cpu_freqs = uv.getNumberOfFrequencies(enCore.CPU);
+        		
+        		LinearLayout ll = new LinearLayout(getApplicationContext());
+        		ll.setOrientation(LinearLayout.VERTICAL);
+        		
+        		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+				ll.setLayoutParams(lp);
+				
+				for(int i = 0; i < num_cpu_freqs; i++)
+				{
+					section5_tv.add(new TextView(getApplicationContext()));
+					section5_tv.get(i).setText("1000000 kHz ( mV)");
+					section5_tv.get(i).setTextColor(Color.BLACK);
+					section5_tv.get(i).setLayoutParams(lp);
+					section5_tv.get(i).setId(i);
+					ll.addView(section5_tv.get(i));
+					
+					section5_sb.add(new SeekBar(getApplicationContext()));
+					//section5_sb.get(i).setLayoutParams(lp);
+					section5_sb.get(i).setMax(1400);
+					section5_sb.get(i).setMinimumWidth(800);
+					section5_sb.get(i).setId(i);
+					ll.addView(section5_sb.get(i));
+				}
+				
+				section5_bt_apply = new Button(getApplicationContext());
+				section5_bt_apply.setText(R.string.section5_bt_apply);
+				section5_bt_apply.setId(section5_bt_apply_id);
+				section5_bt_apply.setTextColor(Color.BLACK);
+				
+				section5_bt_set_on_boot = new Switch(getApplicationContext());
+				section5_bt_set_on_boot.setText(R.string.section5_switch_string);
+				section5_bt_set_on_boot.setTextColor(Color.BLACK);
+				section5_bt_set_on_boot.setLayoutParams(lp);
+				section5_bt_set_on_boot.setId(section5_bt_set_on_boot_id);
+				
+				ll.addView(section5_bt_apply);
+				ll.addView(section5_bt_set_on_boot);
+				
+				section5_tablelayout.addView(ll, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+				
+				uv.getFrequenciesAndVoltage(enCore.CPU);
+				
+				if(initd.checkIfInterfaceIsActivatedOnBoot("/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table") == 1)
+				{
+					section5_bt_set_on_boot.setChecked(true);
+				}
+				else
+				{
+					section5_bt_set_on_boot.setChecked(false);
+				}
+				
+				for(int i = 0; i < num_cpu_freqs; i++)
+				{
+					section5_sb.get(i).setOnSeekBarChangeListener(this);
+				}
+        		
+				section5_bt_apply.setOnClickListener(this);
+        		section5_bt_set_on_boot.setOnCheckedChangeListener(this);
         	}
         	
             return rootView;
@@ -808,27 +860,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    			Toast.makeText(getApplicationContext(), "Error setting new I/O Scheduler!", Toast.LENGTH_SHORT).show();
 		    	}
 		    	break;
-		    case R.id.section4_bt_set_on_boot:
-		    	if(section4_bt_set_on_boot.isChecked() == true)
+		    case section5_bt_apply_id:
+		    {
+		    	if(uv.setVoltages(enCore.CPU) == 0)
 		    	{
-			    	if(gov_iosched.saveToInitdFile(enOnBoot.ENABLE) == 0)
-			    	{
-				    	SystemClock.sleep(200);
-				    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
-				    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
-			    	}
-			    	else
-			    	{
-			    		SystemClock.sleep(200);
-		    			Toast.makeText(getApplicationContext(), "Error writing \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
-		    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
-			    	}
+	    			Toast.makeText(getApplicationContext(), "Setting new CPU Voltages successfully!", Toast.LENGTH_SHORT).show();
 		    	}
 		    	else
 		    	{
-		    		
+	    			Toast.makeText(getApplicationContext(), "Error setting new CPU Voltages!", Toast.LENGTH_SHORT).show();
 		    	}
-		    	break;
+		    }
 		    default:
 		       break;
 		    }   
@@ -872,9 +914,70 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			    		}
 			    	}
 			    	break;
+			    case section5_bt_set_on_boot_id:
+			    	if(section5_bt_set_on_boot.isChecked() == true)
+			    	{
+				    	if(uv.saveToInitdFile(enCore.CPU, enOnBoot.ENABLE) == 0)
+				    	{
+					    	SystemClock.sleep(200);
+					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
+					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+				    	}
+				    	else
+				    	{
+				    		SystemClock.sleep(200);
+			    			Toast.makeText(getApplicationContext(), "Error writing \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
+			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+				    	}
+			    	}
+			    	if(section5_bt_set_on_boot.isChecked() == false)
+			    	{
+			    		if(uv.saveToInitdFile(enCore.CPU, enOnBoot.DISABLE) == 0)
+			    		{
+					    	SystemClock.sleep(200);
+					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
+					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    		}
+			    		else
+			    		{
+				    		SystemClock.sleep(200);
+			    			Toast.makeText(getApplicationContext(), "Error deleting \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
+			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    		}
+			    	}
+			    	break;
 			    default:
 			       break;
 	    	}
+		}
+
+		@Override
+		public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+			// TODO Auto-generated method stub
+			
+			int caller = 0;
+			for(caller = 0; caller < section5_sb.size(); caller++)
+			{
+				if(arg0.getId() == section5_sb.get(caller).getId())
+				{
+					section5_sb.get(caller).setProgress(((int)Math.round(arg1/25))*25);
+					StringBuilder label = new StringBuilder(new String(section5_tv.get(caller).getText().toString()));
+					section5_tv.get(caller).setText(label.substring(0, label.lastIndexOf("(")).toString() + "(" + String.valueOf(section5_sb.get(caller).getProgress()) + " mV)");
+				}
+			}
+			
+		}
+
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 

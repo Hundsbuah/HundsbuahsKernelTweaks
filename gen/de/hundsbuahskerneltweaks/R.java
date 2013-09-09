@@ -100,7 +100,7 @@ public final class R {
         public static final int section4_ioschedulers=0x7f080046;
         public static final int section4_sp_governors=0x7f080044;
         public static final int section4_sp_ioschedulers=0x7f080047;
-        public static final int section5_tablelayout=0x7f08004a;
+        public static final int section5_linearlayout=0x7f08004a;
         public static final int section_label=0x7f080001;
     }
     public static final class layout {
@@ -144,6 +144,9 @@ public final class R {
         public static final int section4_switch_string=0x7f050021;
         public static final int section4_used_gov=0x7f05001a;
         public static final int section4_used_iosched=0x7f05001e;
+        public static final int section5_bt_apply=0x7f050024;
+        public static final int section5_set_on_boot=0x7f050023;
+        public static final int section5_switch_string=0x7f050022;
         public static final int title_section1=0x7f050002;
         public static final int title_section2=0x7f050003;
         public static final int title_section3=0x7f050004;

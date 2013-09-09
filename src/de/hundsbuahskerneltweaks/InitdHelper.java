@@ -219,7 +219,7 @@ public class InitdHelper
 	}
 
 	
-	void checkIfInitdFileExists()
+	private void checkIfInitdFileExists()
 	{
 		File initd = new File("/system/etc/init.d/99hundsapp");
 		if(initd.exists() == false)
