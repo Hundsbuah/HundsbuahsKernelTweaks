@@ -18,6 +18,8 @@ public class Undervolting
 	public List<String> cpu_voltages = new ArrayList<String>();
 	public List<String> gpu_frequencies = new ArrayList<String>();
 	public List<String> gpu_voltages = new ArrayList<String>();
+	public final String gpu_uv_if = "/sys/devices/system/cpu/cpu0/cpufreq/gpu_voltage_control";
+	public final String cpu_uv_if = "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table";
 
 	public Undervolting(MainActivity ma)
     {
@@ -61,7 +63,7 @@ public class Undervolting
 	    		cpu_voltages.clear();
 	    		String[] cpu_freqlist_split = ab.readSuCommand("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies", 1).split(" ");
 	    		String[] cpu_voltages_split = ab.readSuCommand("cat /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table", 1).split("\n");
-	    		if(cpu_freqlist_split.length == 0)
+	    		if(cpu_freqlist_split.length < 2)
 	    			return -1;
 	    		else
 	    		{
@@ -76,21 +78,31 @@ public class Undervolting
 	    				cpu_frequencies.add(cpu_freqlist_split[i]);
 	    			}
 	    		}
+	    		break;
 	    	}
 	    	case GPU:
 	    	{
-	    		String[] gpu_freqlist = ab.readSuCommand("cat /sys/kernel/tegra_cap/gpu_freqs", 1).split(" ");
-	    		if(gpu_freqlist.length == 0)
+	    		gpu_frequencies.clear();
+	    		gpu_voltages.clear();
+	    		String[] gpu_freqlist_split = ab.readSuCommand("cat /sys/kernel/tegra_cap/gpu_freqs", 1).split(" ");
+	    		String[] gpu_voltages_split = ab.readSuCommand("cat /sys/devices/system/cpu/cpu0/cpufreq/gpu_voltage_control", 1).split("\n");
+	    		if(gpu_freqlist_split.length < 2)
 	    			return -1;
 	    		else
 	    		{
-	    			for(int i = 0; i < gpu_freqlist.length; i++)
+	    			int j = gpu_freqlist_split.length-1;
+	    			for(int i = 0; i < gpu_freqlist_split.length; i++)
 	    			{
-	    				//ma.section6_sb.get(i).setProgress(1111);
-	    				//ma.section6_tv.get(i).setText(gpu_freqlist[i] + " kHz ( " + String.valueOf(ma.section5_sb.get(i).getProgress()) + " mV)");
+        				int voltage = Integer.valueOf((gpu_voltages_split[j].split(" ")[1]));
+    					ma.section6_sb.get(i).setProgress(voltage);
+	    				gpu_voltages.add(String.valueOf(voltage));
+        				j--;
+	    				ma.section6_tv.get(i).setText(gpu_freqlist_split[i] + " MHz (" + String.valueOf(ma.section6_sb.get(i).getProgress()) + " mV)");
+	    				gpu_frequencies.add(gpu_freqlist_split[i]);
 	    			}
 	    		}
 	    	}
+	    	break;
     	}
     	return -1;
     }
@@ -113,7 +125,14 @@ public class Undervolting
 	    	}
 	    	case GPU:
 	    	{
-	    		
+	        	for(int i = ma.section6_sb.size()-1; i >= 0; i--)
+	    		{
+	        		if(i != 0)
+	        			parameter.append(String.valueOf(ma.section6_sb.get(i).getProgress()) + " ");
+	        		else
+	        			parameter.append(String.valueOf(ma.section6_sb.get(i).getProgress()));
+	    		}
+	        	return (initd.updateInitd(parameter.toString(), "cat /sys/devices/system/cpu/cpu0/cpufreq/gpu_voltage_control", status));
 	    	}
     	}
     	return 1;
@@ -138,7 +157,15 @@ public class Undervolting
 	    	}
 	    	case GPU:
 	    	{
-	    		
+	        	for(int i = ma.section6_sb.size()-1; i >= 0; i--)
+	    		{
+	        		if(i != 0)
+	        			parameter.append(String.valueOf(ma.section6_sb.get(i).getProgress()) + " ");
+	        		else
+	        			parameter.append(String.valueOf(ma.section6_sb.get(i).getProgress()));
+	    		}
+	        	ab.writeSuCommand("echo \"" + parameter.toString() + "\" > /sys/devices/system/cpu/cpu0/cpufreq/gpu_voltage_control");
+	        	return 0;
 	    	}
     	}
     	return 1;

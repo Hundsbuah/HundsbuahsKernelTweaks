@@ -114,10 +114,27 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private final int section5_bt_apply_id = 10001;
     private final int section5_bt_set_on_boot_id = 10002;
 
+    private LinearLayout section6_tablelayout;
+	public List<TextView> section6_tv = new ArrayList<TextView>();
+	public List<SeekBar> section6_sb = new ArrayList<SeekBar>();
+    private Button section6_bt_apply;
+    private Switch section6_bt_set_on_boot;
+    private final int section6_bt_apply_id = 10003;
+    private final int section6_bt_set_on_boot_id = 10004;
+    
+    private Switch section7_bt_set_on_boot;
+    private Button section7_bt_apply;
+    public SeekBar section7_sb_rt_2;
+    public SeekBar section7_sb_rt_3;
+    public SeekBar section7_sb_rt_4;
+    public TextView section7_tv_rt_2;
+    public TextView section7_tv_rt_3;
+    public TextView section7_tv_rt_4;
+    
     private MainActivity ma = this;
     private int first_start = 1;
-    
-	private int num_current_messageboxes = 0;
+
+    private int num_current_messageboxes = 0;
 	final int MAX_CURRENT_MESSAGE_BOXES = 2;
 	
     public int kernel_info_done = 0;
@@ -134,6 +151,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
    	   ENABLE,
     }   
     
+    public int hotplug_if_not_available = 0;
+    public int gpu_voltage_if_not_available = 0;
+    public int cpu_voltage_if_not_available = 0;
+
     private AndroidBash ab;
     private Helper helper;
     private CurrentSettings cs;
@@ -141,6 +162,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private Governor_IOscheduler gov_iosched;
     private InitdHelper initd;
     private Undervolting uv;
+    private Hotplugging hotplugging;
+    
 	public void showMessageBox(String str, int showAlways)
 	{
 		num_current_messageboxes++;
@@ -268,8 +291,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		@Override
 		public int getCount() {
-			// Show 5 total pages.
-			return 5;
+			// Show 7 total pages.
+			return 7;
 		}
 
 		@Override
@@ -286,6 +309,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				return getString(R.string.title_section4).toUpperCase(l);
 			case 4:
 				return getString(R.string.title_section5).toUpperCase(l);
+			case 5:
+				return getString(R.string.title_section6).toUpperCase(l);
+			case 6:
+				return getString(R.string.title_section7).toUpperCase(l);
 			}
 			return null;
 		}
@@ -346,6 +373,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    gov_iosched = new Governor_IOscheduler(ma);
 		    initd = new InitdHelper(ma);
 		    uv = new Undervolting(ma);
+		    hotplugging = new Hotplugging(ma);
 		    
         	if(getArguments().getInt(ARG_SECTION_NUMBER) == 1)
         	{
@@ -473,6 +501,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	
         	else if(getArguments().getInt(ARG_SECTION_NUMBER) == 5)
         	{
+        		section5_sb.clear();
+        		section5_tv.clear();
         		rootView = inflater.inflate(R.layout.uv_cpu, container, false);
         		tv_label = (TextView) rootView.findViewById(R.id.section_label);
         		tv_label.setText(helper.getKernelInfo());
@@ -481,6 +511,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         		section5_tablelayout.setVerticalScrollBarEnabled(true);
         		
         		int num_cpu_freqs = uv.getNumberOfFrequencies(enCore.CPU);
+        		
+        		if(num_cpu_freqs < 2)
+        		{
+        			cpu_voltage_if_not_available = 1;
+        			showMessageBox("CPU UV is not available!", 1);
+        		}
+        		else
+        		{
+        			cpu_voltage_if_not_available = 0;
+        		}
         		
         		LinearLayout ll = new LinearLayout(getApplicationContext());
         		ll.setOrientation(LinearLayout.VERTICAL);
@@ -494,7 +534,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					section5_tv.get(i).setText("1000000 kHz ( mV)");
 					section5_tv.get(i).setTextColor(Color.BLACK);
 					section5_tv.get(i).setLayoutParams(lp);
-					section5_tv.get(i).setId(i);
 					ll.addView(section5_tv.get(i));
 					
 					section5_sb.add(new SeekBar(getApplicationContext()));
@@ -523,7 +562,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				
 				uv.getFrequenciesAndVoltage(enCore.CPU);
 				
-				if(initd.checkIfInterfaceIsActivatedOnBoot("/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table") == 1)
+				if(initd.checkIfInterfaceIsActivatedOnBoot(uv.cpu_uv_if) == 1)
 				{
 					section5_bt_set_on_boot.setChecked(true);
 				}
@@ -536,11 +575,145 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				{
 					section5_sb.get(i).setOnSeekBarChangeListener(this);
 				}
-        		
-				section5_bt_apply.setOnClickListener(this);
-        		section5_bt_set_on_boot.setOnCheckedChangeListener(this);
+        		if(cpu_voltage_if_not_available == 0)
+        		{
+    				section5_bt_apply.setOnClickListener(this);
+            		section5_bt_set_on_boot.setOnCheckedChangeListener(this);
+        		}
         	}
-        	
+        	else if(getArguments().getInt(ARG_SECTION_NUMBER) == 6)
+        	{
+        		section6_sb.clear();
+        		section6_tv.clear();
+        		rootView = inflater.inflate(R.layout.uv_gpu, container, false);
+        		tv_label = (TextView) rootView.findViewById(R.id.section_label);
+        		tv_label.setText(helper.getKernelInfo());
+        		section6_tablelayout = (LinearLayout) rootView.findViewById(R.id.section6_linearlayout);
+        		section6_tablelayout.setHorizontalScrollBarEnabled(true);
+        		section6_tablelayout.setVerticalScrollBarEnabled(true);
+        		
+        		int num_gpu_freqs = uv.getNumberOfFrequencies(enCore.GPU);
+        		
+        		if(num_gpu_freqs < 2)
+        		{
+        			gpu_voltage_if_not_available = 1;
+        			showMessageBox("GPU UV is not available!", 1);
+        		}
+        		else
+        		{
+        			gpu_voltage_if_not_available = 0;
+        		}
+        		
+        		LinearLayout ll = new LinearLayout(getApplicationContext());
+        		ll.setOrientation(LinearLayout.VERTICAL);
+        		
+        		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+				ll.setLayoutParams(lp);
+				
+				for(int i = 0; i < num_gpu_freqs; i++)
+				{
+					section6_tv.add(new TextView(getApplicationContext()));
+					section6_tv.get(i).setText("1000000 kHz ( mV)");
+					section6_tv.get(i).setTextColor(Color.BLACK);
+					section6_tv.get(i).setLayoutParams(lp);
+					ll.addView(section6_tv.get(i));
+					
+					section6_sb.add(new SeekBar(getApplicationContext()));
+					//section6_sb.get(i).setLayoutParams(lp);
+					section6_sb.get(i).setMax(1500);
+					section6_sb.get(i).setMinimumWidth(800);
+					section6_sb.get(i).setId(i);
+					ll.addView(section6_sb.get(i));
+				}
+				
+				section6_bt_apply = new Button(getApplicationContext());
+				section6_bt_apply.setText(R.string.section6_bt_apply);
+				section6_bt_apply.setId(section6_bt_apply_id);
+				section6_bt_apply.setTextColor(Color.BLACK);
+				
+				section6_bt_set_on_boot = new Switch(getApplicationContext());
+				section6_bt_set_on_boot.setText(R.string.section6_switch_string);
+				section6_bt_set_on_boot.setTextColor(Color.BLACK);
+				section6_bt_set_on_boot.setLayoutParams(lp);
+				section6_bt_set_on_boot.setId(section6_bt_set_on_boot_id);
+				
+				ll.addView(section6_bt_apply);
+				ll.addView(section6_bt_set_on_boot);
+				
+				section6_tablelayout.addView(ll, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+				
+				uv.getFrequenciesAndVoltage(enCore.GPU);
+				
+				if(initd.checkIfInterfaceIsActivatedOnBoot(uv.gpu_uv_if) == 1)
+				{
+					section6_bt_set_on_boot.setChecked(true);
+				}
+				else
+				{
+					section6_bt_set_on_boot.setChecked(false);
+				}
+				
+				for(int i = 0; i < num_gpu_freqs; i++)
+				{
+					section6_sb.get(i).setOnSeekBarChangeListener(this);
+				}
+        		if(gpu_voltage_if_not_available == 0)
+        		{
+    				section6_bt_apply.setOnClickListener(this);
+            		section6_bt_set_on_boot.setOnCheckedChangeListener(this);
+        		}
+        	}
+        	else if(getArguments().getInt(ARG_SECTION_NUMBER) == 7)
+        	{
+        		rootView = inflater.inflate(R.layout.hotplugging, container, false);   
+        		tv_label = (TextView) rootView.findViewById(R.id.section_label);
+        		section7_bt_apply = (Button) rootView.findViewById(R.id.section7_bt_apply);
+        		section7_bt_set_on_boot = (Switch) rootView.findViewById(R.id.section7_bt_set_on_boot);
+        		section7_sb_rt_2 = (SeekBar) rootView.findViewById(R.id.section7_sb_rt_2);
+        		section7_sb_rt_3 = (SeekBar) rootView.findViewById(R.id.section7_sb_rt_3);
+        		section7_sb_rt_4 = (SeekBar) rootView.findViewById(R.id.section7_sb_rt_4);
+        		section7_tv_rt_2 = (TextView) rootView.findViewById(R.id.section7_tv_2);
+        		section7_tv_rt_3 = (TextView) rootView.findViewById(R.id.section7_tv_3);
+        		section7_tv_rt_4 = (TextView) rootView.findViewById(R.id.section7_tv_4);
+        		tv_label.setText(helper.getKernelInfo());
+        		
+        		section7_sb_rt_2.setOnSeekBarChangeListener(this);
+        		section7_sb_rt_3.setOnSeekBarChangeListener(this);
+        		section7_sb_rt_4.setOnSeekBarChangeListener(this);
+        		
+        		if(hotplugging.getRtConfig() != 0)
+        		{
+        			showMessageBox("Cant read hotpluggings runnable thread config", 0);
+        			hotplug_if_not_available = 1;
+        		}
+        		else
+        		{
+        			hotplug_if_not_available = 0;
+        		}
+        		
+        		for (int i=0; i < 6; i++)
+        		{
+        			Toast.makeText(getApplicationContext(), "As there are 4 cores in the system, you have to divide each of your selected values by 4 to get the real number of running threads when a core should be come online!", Toast.LENGTH_SHORT).show();
+        		}
+        		
+        		section7_sb_rt_2.setMax(50);
+        		section7_sb_rt_3.setMax(50);
+        		section7_sb_rt_4.setMax(50);
+        		
+        		if(initd.checkIfInterfaceIsActivatedOnBoot(hotplugging.hotplugging_if) == 1)
+        		{
+        			section7_bt_set_on_boot.setChecked(true);
+        		}
+        		else
+        		{
+        			section7_bt_set_on_boot.setChecked(false);
+        		}
+        		if(hotplug_if_not_available == 0)
+        		{
+            		section7_bt_set_on_boot.setOnCheckedChangeListener(this);
+            		section7_bt_apply.setOnClickListener(this);
+        		}
+        	}
             return rootView;
         }
 
@@ -766,7 +939,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    	{
 		    		if(cs.writeGpuFrequencys() == 0)
 		    		{
-		    			SystemClock.sleep(200);
+		    			SystemClock.sleep(70);
 		    			if(cs.readGpuFrequencys() == 0)
 		    			{
 		    				Toast.makeText(getApplicationContext(), "Successful...\nGPU Voltage: " + current_voltage_gpu + "mV", Toast.LENGTH_SHORT).show();
@@ -827,7 +1000,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    case R.id.section4_bt_set_governor:
 		    	if(gov_iosched.setGovernor() == 0)
 		    	{
-			    	SystemClock.sleep(200);
+			    	SystemClock.sleep(70);
 			    	if(gov_iosched.getGovernors() == 0)
 		    		{
 		    			Toast.makeText(getApplicationContext(), "New Governor " + available_governors.getSelectedItem().toString() + " successfully set!", Toast.LENGTH_SHORT).show();
@@ -845,7 +1018,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    case R.id.section4_bt_set_ioscheduler:
 		    	if(gov_iosched.setIOScheduler() == 0)
 		    	{
-			    	SystemClock.sleep(200);
+			    	SystemClock.sleep(70);
 			    	if(gov_iosched.getIOSchedulers() == 0)
 		    		{
 		    			Toast.makeText(getApplicationContext(), "New I/O Scheduler " + available_ioschedulers.getSelectedItem().toString() + " successfully set!", Toast.LENGTH_SHORT).show();
@@ -870,6 +1043,31 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    	{
 	    			Toast.makeText(getApplicationContext(), "Error setting new CPU Voltages!", Toast.LENGTH_SHORT).show();
 		    	}
+		    	break;
+		    }
+		    case section6_bt_apply_id:
+		    {
+		    	if(uv.setVoltages(enCore.GPU) == 0)
+		    	{
+	    			Toast.makeText(getApplicationContext(), "Setting new GPU Voltages successfully!", Toast.LENGTH_SHORT).show();
+		    	}
+		    	else
+		    	{
+	    			Toast.makeText(getApplicationContext(), "Error setting new GPU Voltages!", Toast.LENGTH_SHORT).show();
+		    	}
+		    	break;
+		    }
+		    case R.id.section7_bt_apply:
+		    {
+		    	if(hotplugging.setRtConfig() == 0)
+		    	{
+	    			Toast.makeText(getApplicationContext(), "Setting new Hotplugging runnable thread values successfully!", Toast.LENGTH_SHORT).show();
+		    	}
+		    	else
+		    	{
+	    			Toast.makeText(getApplicationContext(), "Error setting new Hotplugging runnable threads values!", Toast.LENGTH_SHORT).show();
+		    	}
+		    	break;
 		    }
 		    default:
 		       break;
@@ -887,28 +1085,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			    	{
 				    	if(gov_iosched.saveToInitdFile(enOnBoot.ENABLE) == 0)
 				    	{
-					    	SystemClock.sleep(200);
+					    	SystemClock.sleep(70);
 					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
 					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
 				    	}
 				    	else
 				    	{
-				    		SystemClock.sleep(200);
+				    		SystemClock.sleep(70);
 			    			Toast.makeText(getApplicationContext(), "Error writing \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
 			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
 				    	}
 			    	}
-			    	if(section4_bt_set_on_boot.isChecked() == false)
+			    	else
 			    	{
 			    		if(gov_iosched.saveToInitdFile(enOnBoot.DISABLE) == 0)
 			    		{
-					    	SystemClock.sleep(200);
+					    	SystemClock.sleep(70);
 					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
 					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
 			    		}
 			    		else
 			    		{
-				    		SystemClock.sleep(200);
+				    		SystemClock.sleep(70);
 			    			Toast.makeText(getApplicationContext(), "Error deleting \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
 			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
 			    		}
@@ -919,28 +1117,92 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			    	{
 				    	if(uv.saveToInitdFile(enCore.CPU, enOnBoot.ENABLE) == 0)
 				    	{
-					    	SystemClock.sleep(200);
+					    	SystemClock.sleep(70);
 					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
 					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
 				    	}
 				    	else
 				    	{
-				    		SystemClock.sleep(200);
+				    		SystemClock.sleep(70);
 			    			Toast.makeText(getApplicationContext(), "Error writing \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
 			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
 				    	}
 			    	}
-			    	if(section5_bt_set_on_boot.isChecked() == false)
+			    	else
 			    	{
 			    		if(uv.saveToInitdFile(enCore.CPU, enOnBoot.DISABLE) == 0)
 			    		{
-					    	SystemClock.sleep(200);
+					    	SystemClock.sleep(70);
 					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
 					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
 			    		}
 			    		else
 			    		{
-				    		SystemClock.sleep(200);
+				    		SystemClock.sleep(70);
+			    			Toast.makeText(getApplicationContext(), "Error deleting \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
+			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    		}
+			    	}
+			    	break;
+			    case section6_bt_set_on_boot_id:
+			    	if(section6_bt_set_on_boot.isChecked() == true)
+			    	{
+				    	if(uv.saveToInitdFile(enCore.GPU, enOnBoot.ENABLE) == 0)
+				    	{
+					    	SystemClock.sleep(70);
+					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
+					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+				    	}
+				    	else
+				    	{
+				    		SystemClock.sleep(70);
+			    			Toast.makeText(getApplicationContext(), "Error writing \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
+			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+				    	}
+			    	}
+			    	else
+			    	{
+			    		if(uv.saveToInitdFile(enCore.GPU, enOnBoot.DISABLE) == 0)
+			    		{
+					    	SystemClock.sleep(70);
+					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
+					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    		}
+			    		else
+			    		{
+				    		SystemClock.sleep(70);
+			    			Toast.makeText(getApplicationContext(), "Error deleting \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
+			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    		}
+			    	}
+			    	break;
+			    case R.id.section7_bt_set_on_boot:
+			    	if(section7_bt_set_on_boot.isChecked() == true)
+			    	{
+				    	if(hotplugging.saveToInitdFile(enOnBoot.ENABLE) == 0)
+				    	{
+					    	SystemClock.sleep(70);
+					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
+					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+				    	}
+				    	else
+				    	{
+				    		SystemClock.sleep(70);
+			    			Toast.makeText(getApplicationContext(), "Error writing \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
+			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+				    	}
+			    	}
+			    	else
+			    	{
+			    		if(hotplugging.saveToInitdFile(enOnBoot.DISABLE) == 0)
+			    		{
+					    	SystemClock.sleep(70);
+					    	Toast.makeText(getApplicationContext(), "\"/system/etc/init.d/99hundsapp\" successfully written!", Toast.LENGTH_SHORT).show();
+					    	ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+			    		}
+			    		else
+			    		{
+				    		SystemClock.sleep(70);
 			    			Toast.makeText(getApplicationContext(), "Error deleting \"/system/etc/init.d/99hundsapp\" file!", Toast.LENGTH_SHORT).show();
 			    			ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
 			    		}
@@ -956,6 +1218,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// TODO Auto-generated method stub
 			
 			int caller = 0;
+			if(arg0.getId() == section7_sb_rt_2.getId())
+			{
+				section7_sb_rt_2.setProgress(arg1);
+				section7_tv_rt_2.setText(this.getString(R.string.section7_rt_2) + String.valueOf(section7_sb_rt_2.getProgress() + this.getString(R.string.section7_rt_endstring)));
+			}
+			if(arg0.getId() == section7_sb_rt_3.getId())
+			{
+				section7_sb_rt_3.setProgress(arg1);
+				section7_tv_rt_3.setText(this.getString(R.string.section7_rt_3) + String.valueOf(section7_sb_rt_3.getProgress() + this.getString(R.string.section7_rt_endstring)));
+			}
+			if(arg0.getId() == section7_sb_rt_4.getId())
+			{
+				section7_sb_rt_4.setProgress(arg1);
+				section7_tv_rt_4.setText(this.getString(R.string.section7_rt_4) + String.valueOf(section7_sb_rt_4.getProgress() + this.getString(R.string.section7_rt_endstring)));
+			}
 			for(caller = 0; caller < section5_sb.size(); caller++)
 			{
 				if(arg0.getId() == section5_sb.get(caller).getId())
@@ -963,6 +1240,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					section5_sb.get(caller).setProgress(((int)Math.round(arg1/25))*25);
 					StringBuilder label = new StringBuilder(new String(section5_tv.get(caller).getText().toString()));
 					section5_tv.get(caller).setText(label.substring(0, label.lastIndexOf("(")).toString() + "(" + String.valueOf(section5_sb.get(caller).getProgress()) + " mV)");
+				}
+			}
+			for(caller = 0; caller < section6_sb.size(); caller++)
+			{
+				if(arg0.getId() == section6_sb.get(caller).getId())
+				{
+					section6_sb.get(caller).setProgress(((int)Math.round(arg1/25))*25);
+					StringBuilder label = new StringBuilder(new String(section6_tv.get(caller).getText().toString()));
+					section6_tv.get(caller).setText(label.substring(0, label.lastIndexOf("(")).toString() + "(" + String.valueOf(section6_sb.get(caller).getProgress()) + " mV)");
 				}
 			}
 			

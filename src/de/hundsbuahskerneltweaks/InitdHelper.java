@@ -39,12 +39,12 @@ public class InitdHelper
 		try
 		{
 			ab.writeSuCommand("busybox mount -o remount,rw /dev/block/mmcblk0p1 /system");
-			SystemClock.sleep(200);
+			SystemClock.sleep(70);
 			ab.writeSuCommand("chmod 777 /system/etc/init.d/99hundsapp");
 			SystemClock.sleep(50);
 			
 			checkIfInitdFileExists();
-
+			
 			initd_inputstream = new FileInputStream("/system/etc/init.d/99hundsapp");
 			initd_inputstreamreader = new InputStreamReader(initd_inputstream);
 			buffreader = new BufferedReader(initd_inputstreamreader);
@@ -168,11 +168,10 @@ public class InitdHelper
 		BufferedReader buffreader = null;
 		String line = "";
 		initd_activated_check.clear();
-		
 		try
 		{
 			ab.writeSuCommand("busybox mount -o remount,rw /dev/block/mmcblk0p1 /system");
-			SystemClock.sleep(200);
+			SystemClock.sleep(70);
 			ab.writeSuCommand("chmod 777 /system/etc/init.d/99hundsapp");
 			SystemClock.sleep(50);
 			
@@ -192,7 +191,7 @@ public class InitdHelper
 		catch(Exception e)
 		{
 			ma.showMessageBox("Error reading init.d file!", 0);
-			return 1;
+			return -1;
 		}
 		finally
 		{
@@ -204,7 +203,7 @@ public class InitdHelper
 			catch (Exception e)
 			{
 				ma.showMessageBox("Cant close file input stream for initd file!", 0);
-				return 1;
+				return -1;
 			}
 		}
 		
@@ -225,8 +224,9 @@ public class InitdHelper
 		if(initd.exists() == false)
 		{
 			ab.writeSuCommand("echo \"\" > /system/etc/init.d/99hundsapp");
-			SystemClock.sleep(200);
+			SystemClock.sleep(75);
 			ab.writeSuCommand("chmod 777 /system/etc/init.d/99hundsapp");
+			SystemClock.sleep(75);
 			initd_content.add("#!/system/bin/sh\n");
 		}
 	}

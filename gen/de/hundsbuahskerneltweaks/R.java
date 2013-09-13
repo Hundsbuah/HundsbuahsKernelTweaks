@@ -26,7 +26,7 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f08004b;
+        public static final int action_settings=0x7f080054;
         public static final int pager=0x7f080000;
         public static final int section1_asus_balancedmode=0x7f080018;
         public static final int section1_asus_performancemode=0x7f080023;
@@ -100,7 +100,16 @@ public final class R {
         public static final int section4_ioschedulers=0x7f080046;
         public static final int section4_sp_governors=0x7f080044;
         public static final int section4_sp_ioschedulers=0x7f080047;
-        public static final int section5_linearlayout=0x7f08004a;
+        public static final int section5_linearlayout=0x7f080052;
+        public static final int section6_linearlayout=0x7f080053;
+        public static final int section7_bt_apply=0x7f080050;
+        public static final int section7_bt_set_on_boot=0x7f080051;
+        public static final int section7_sb_rt_2=0x7f08004b;
+        public static final int section7_sb_rt_3=0x7f08004d;
+        public static final int section7_sb_rt_4=0x7f08004f;
+        public static final int section7_tv_2=0x7f08004a;
+        public static final int section7_tv_3=0x7f08004c;
+        public static final int section7_tv_4=0x7f08004e;
         public static final int section_label=0x7f080001;
     }
     public static final class layout {
@@ -109,7 +118,9 @@ public final class R {
         public static final int fragment_gamingmode=0x7f030002;
         public static final int fragment_gpu=0x7f030003;
         public static final int governor_iosched=0x7f030004;
-        public static final int uv_cpu=0x7f030005;
+        public static final int hotplugging=0x7f030005;
+        public static final int uv_cpu=0x7f030006;
+        public static final int uv_gpu=0x7f030007;
     }
     public static final class menu {
         public static final int main=0x7f070000;
@@ -147,11 +158,22 @@ public final class R {
         public static final int section5_bt_apply=0x7f050024;
         public static final int section5_set_on_boot=0x7f050023;
         public static final int section5_switch_string=0x7f050022;
+        public static final int section6_bt_apply=0x7f050028;
+        public static final int section6_set_on_boot=0x7f050027;
+        public static final int section6_switch_string=0x7f050026;
+        public static final int section7_bt_apply=0x7f05002a;
+        public static final int section7_rt_2=0x7f05002b;
+        public static final int section7_rt_3=0x7f05002c;
+        public static final int section7_rt_4=0x7f05002d;
+        public static final int section7_rt_endstring=0x7f05002e;
+        public static final int section7_switch_string=0x7f05002f;
         public static final int title_section1=0x7f050002;
         public static final int title_section2=0x7f050003;
         public static final int title_section3=0x7f050004;
         public static final int title_section4=0x7f05001c;
         public static final int title_section5=0x7f050020;
+        public static final int title_section6=0x7f050025;
+        public static final int title_section7=0x7f050029;
     }
     public static final class style {
         /** 

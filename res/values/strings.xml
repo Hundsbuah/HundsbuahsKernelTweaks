@@ -38,4 +38,15 @@
     <string name="section5_switch_string">Load settings at boot?</string>
     <string name="section5_set_on_boot">Load these settings on each boot</string>
     <string name="section5_bt_apply">Apply Voltages!</string>
+    <string name="title_section6">GPU UV</string>
+    <string name="section6_switch_string">Load settings at boot?</string>
+    <string name="section6_set_on_boot">Load these settings on each boot</string>
+    <string name="section6_bt_apply">Apply Voltages!</string>
+    <string name="title_section7">Hotplugging Config</string>
+    <string name="section7_bt_apply">Apply Hotplugging Config</string>
+    <string name="section7_rt_2">Bring Core 2 online when more than ( </string>
+    <string name="section7_rt_3">Bring Core 3 online when more than ( </string>
+    <string name="section7_rt_4">Bring Core 4 online when more than ( </string>
+    <string name="section7_rt_endstring"> / 4(cores)) running-threads are active</string>
+    <string name="section7_switch_string">Load settings at boot?</string>
 </resources>

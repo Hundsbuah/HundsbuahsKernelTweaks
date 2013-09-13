@@ -14,13 +14,15 @@
         android:layout_height="wrap_content" />
 
     <ScrollView android:layout_width="match_parent" >
-	    <LinearLayout
-	        android:id="@+id/section5_linearlayout"
-	        android:layout_width="match_parent"
+
+        <LinearLayout
+            android:id="@+id/section6_linearlayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-	        android:orientation="vertical" >
-	
-	    </LinearLayout>
+            android:orientation="vertical" >
+
+        </LinearLayout>
+
 	</ScrollView>
 
 </TableLayout>

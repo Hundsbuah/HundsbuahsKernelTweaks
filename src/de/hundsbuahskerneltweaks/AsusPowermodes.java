@@ -277,7 +277,7 @@ public class AsusPowermodes
 		int gpu_new_voltage = 0;
 		
 		ab.writeSuCommand("busybox mount -o remount,rw /dev/block/mmcblk0p1 /system");
-		SystemClock.sleep(200);
+		SystemClock.sleep(70);
 		try
 		{
 			switch(core)
