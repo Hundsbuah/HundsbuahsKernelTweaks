@@ -132,7 +132,7 @@ public class Undervolting
 	        		else
 	        			parameter.append(String.valueOf(ma.section6_sb.get(i).getProgress()));
 	    		}
-	        	return (initd.updateInitd(parameter.toString(), "cat /sys/devices/system/cpu/cpu0/cpufreq/gpu_voltage_control", status));
+	        	return (initd.updateInitd(parameter.toString(), "/sys/devices/system/cpu/cpu0/cpufreq/gpu_voltage_control", status));
 	    	}
     	}
     	return 1;
