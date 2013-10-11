@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.hundsbuahskerneltweaks"
     android:versionCode="1"
-    android:versionName="2.2" android:installLocation="auto">
+    android:versionName="2.3" android:installLocation="auto">
 
     <uses-sdk
         android:minSdkVersion="16"

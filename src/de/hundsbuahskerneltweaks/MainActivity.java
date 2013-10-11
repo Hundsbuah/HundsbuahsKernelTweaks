@@ -344,8 +344,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 			if(first_start == 1)
 			{
-				first_start = 0;
 				
+				first_start = 0;
+
 				if (RootTools.isRootAvailable())
 				{
 					while (RootTools.isAccessGiven() == false && retries != 0)
@@ -364,17 +365,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					showMessageBox("No SU found!", 1);
 					finish();
 				}
+				
+			    ab = new AndroidBash(ma);
+			    helper = new Helper(ma);
+			    cs = new CurrentSettings(ma);
+			    apm = new AsusPowermodes(ma);
+			    gov_iosched = new Governor_IOscheduler(ma);
+			    initd = new InitdHelper(ma);
+			    uv = new Undervolting(ma);
+			    hotplugging = new Hotplugging(ma);
+				
+				initd.createInitdIfNotExists();
 			}
-			
-		    ab = new AndroidBash(ma);
-		    helper = new Helper(ma);
-		    cs = new CurrentSettings(ma);
-		    apm = new AsusPowermodes(ma);
-		    gov_iosched = new Governor_IOscheduler(ma);
-		    initd = new InitdHelper(ma);
-		    uv = new Undervolting(ma);
-		    hotplugging = new Hotplugging(ma);
-		    
+				    
         	if(getArguments().getInt(ARG_SECTION_NUMBER) == 1)
         	{
         		rootView = inflater.inflate(R.layout.fragment_cpu, container, false);
@@ -691,10 +694,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         			hotplug_if_not_available = 0;
         		}
         		
+        		/*
         		for (int i=0; i < 6; i++)
         		{
         			Toast.makeText(getApplicationContext(), "As there are 4 cores in the system, you have to divide each of your selected values by 4 to get the real number of running threads when a core should be come online!", Toast.LENGTH_SHORT).show();
-        		}
+        		}*/
         		
         		section7_sb_rt_2.setMax(50);
         		section7_sb_rt_3.setMax(50);
@@ -1218,40 +1222,60 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			// TODO Auto-generated method stub
 			
 			int caller = 0;
-			if(arg0.getId() == section7_sb_rt_2.getId())
+
+			if(section6_sb != null)
 			{
-				section7_sb_rt_2.setProgress(arg1);
-				section7_tv_rt_2.setText(this.getString(R.string.section7_rt_2) + String.valueOf(section7_sb_rt_2.getProgress() + this.getString(R.string.section7_rt_endstring)));
-			}
-			if(arg0.getId() == section7_sb_rt_3.getId())
-			{
-				section7_sb_rt_3.setProgress(arg1);
-				section7_tv_rt_3.setText(this.getString(R.string.section7_rt_3) + String.valueOf(section7_sb_rt_3.getProgress() + this.getString(R.string.section7_rt_endstring)));
-			}
-			if(arg0.getId() == section7_sb_rt_4.getId())
-			{
-				section7_sb_rt_4.setProgress(arg1);
-				section7_tv_rt_4.setText(this.getString(R.string.section7_rt_4) + String.valueOf(section7_sb_rt_4.getProgress() + this.getString(R.string.section7_rt_endstring)));
-			}
-			for(caller = 0; caller < section5_sb.size(); caller++)
-			{
-				if(arg0.getId() == section5_sb.get(caller).getId())
+				for(caller = 0; caller < section6_sb.size(); caller++)
 				{
-					section5_sb.get(caller).setProgress(((int)Math.round(arg1/25))*25);
-					StringBuilder label = new StringBuilder(new String(section5_tv.get(caller).getText().toString()));
-					section5_tv.get(caller).setText(label.substring(0, label.lastIndexOf("(")).toString() + "(" + String.valueOf(section5_sb.get(caller).getProgress()) + " mV)");
-				}
-			}
-			for(caller = 0; caller < section6_sb.size(); caller++)
-			{
-				if(arg0.getId() == section6_sb.get(caller).getId())
-				{
-					section6_sb.get(caller).setProgress(((int)Math.round(arg1/25))*25);
-					StringBuilder label = new StringBuilder(new String(section6_tv.get(caller).getText().toString()));
-					section6_tv.get(caller).setText(label.substring(0, label.lastIndexOf("(")).toString() + "(" + String.valueOf(section6_sb.get(caller).getProgress()) + " mV)");
+					if(arg0.getId() == section6_sb.get(caller).getId())
+					{
+						section6_sb.get(caller).setProgress(((int)Math.round(arg1/25))*25);
+						StringBuilder label = new StringBuilder(new String(section6_tv.get(caller).getText().toString()));
+						section6_tv.get(caller).setText(label.substring(0, label.lastIndexOf("(")).toString() + "(" + String.valueOf(section6_sb.get(caller).getProgress()) + " mV)");
+					}
 				}
 			}
 			
+			if(section7_sb_rt_4 != null)
+			{
+				if(arg0.getId() == section7_sb_rt_2.getId())
+				{
+					section7_sb_rt_2.setProgress(arg1);
+					section7_tv_rt_2.setText(this.getString(R.string.section7_rt_2) + String.valueOf(section7_sb_rt_2.getProgress() + this.getString(R.string.section7_rt_endstring)));
+				}
+			}
+
+			if(section7_sb_rt_3 != null)
+			{
+				if(arg0.getId() == section7_sb_rt_3.getId())
+				{
+					section7_sb_rt_3.setProgress(arg1);
+					section7_tv_rt_3.setText(this.getString(R.string.section7_rt_3) + String.valueOf(section7_sb_rt_3.getProgress() + this.getString(R.string.section7_rt_endstring)));
+				}
+			}
+
+			if(section7_sb_rt_4 != null)
+			{
+				if(arg0.getId() == section7_sb_rt_4.getId())
+				{
+					section7_sb_rt_4.setProgress(arg1);
+					section7_tv_rt_4.setText(this.getString(R.string.section7_rt_4) + String.valueOf(section7_sb_rt_4.getProgress() + this.getString(R.string.section7_rt_endstring)));
+				}
+			}
+			
+			if(section5_sb != null)
+			{
+
+				for(caller = 0; caller < section5_sb.size(); caller++)
+				{
+					if(arg0.getId() == section5_sb.get(caller).getId())
+					{
+						section5_sb.get(caller).setProgress(((int)Math.round(arg1/25))*25);
+						StringBuilder label = new StringBuilder(new String(section5_tv.get(caller).getText().toString()));
+						section5_tv.get(caller).setText(label.substring(0, label.lastIndexOf("(")).toString() + "(" + String.valueOf(section5_sb.get(caller).getProgress()) + " mV)");
+					}
+				}	
+			}
 		}
 
 		@Override

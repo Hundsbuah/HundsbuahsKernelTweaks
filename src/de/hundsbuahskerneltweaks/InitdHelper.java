@@ -199,6 +199,7 @@ public class InitdHelper
 			try
 			{
 				initd_inputstream.close();
+				buffreader.close();
 			}
 			catch (Exception e)
 			{
@@ -217,6 +218,22 @@ public class InitdHelper
 		return -1;
 	}
 
+	public void createInitdIfNotExists()
+	{
+		ab.writeSuCommand("busybox mount -o remount,rw /dev/block/mmcblk0p1 /system");
+		SystemClock.sleep(75);
+
+		if(new File("/system/etc/init.d/99hundsapp").exists() == false)
+		{
+			ab.writeSuCommand("echo \"#!/system/bin/sh\n\" > /system/etc/init.d/99hundsapp");
+			SystemClock.sleep(75);
+			ab.writeSuCommand("chmod 777 /system/etc/init.d/99hundsapp");
+			SystemClock.sleep(75);
+		}
+		
+		ab.writeSuCommand("busybox mount -o remount,ro /dev/block/mmcblk0p1 /system");
+		SystemClock.sleep(75);
+	}
 	
 	private void checkIfInitdFileExists()
 	{

@@ -117,10 +117,11 @@ public final class R {
         public static final int fragment_cpu=0x7f030001;
         public static final int fragment_gamingmode=0x7f030002;
         public static final int fragment_gpu=0x7f030003;
-        public static final int governor_iosched=0x7f030004;
-        public static final int hotplugging=0x7f030005;
-        public static final int uv_cpu=0x7f030006;
-        public static final int uv_gpu=0x7f030007;
+        public static final int governor=0x7f030004;
+        public static final int governor_iosched=0x7f030005;
+        public static final int hotplugging=0x7f030006;
+        public static final int uv_cpu=0x7f030007;
+        public static final int uv_gpu=0x7f030008;
     }
     public static final class menu {
         public static final int main=0x7f070000;
