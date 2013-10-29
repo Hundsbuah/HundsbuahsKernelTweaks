@@ -49,4 +49,8 @@
     <string name="section7_rt_4">Bring Core 4 online when more than ( </string>
     <string name="section7_rt_endstring"> / 4(cores)) running-threads are active</string>
     <string name="section7_switch_string">Load settings at boot?</string>
+    <string name="section8_download_url">http://d-h.st/GBy</string>
+    <string name="section8_desc">What you need:\n- My kernel v3.4.1 (2013-10-29) or higher (look above in kernel info)\n- Installed Linux (see download link below)\n\nYou need to download this installer below and flash it in TWRP and install linux and kexec hardboot files. This installer does not install any new kernel - it just installs Linux! Only then you can boot to Linux with the button below!</string>
+    <string name="title_section8">Boot to Linux</string>
+    <string name="section8_bt_bootlinux">Boot to Linux now</string>
 </resources>

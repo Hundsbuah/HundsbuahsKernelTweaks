@@ -8,9 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.Application;
 import android.app.FragmentTransaction;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -30,15 +28,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -130,6 +125,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public TextView section7_tv_rt_2;
     public TextView section7_tv_rt_3;
     public TextView section7_tv_rt_4;
+    
+    private Button section8_bt_bootlinux;
+    public TextView section8_tv_desc;
+    public TextView section8_tv_download_url;
     
     private MainActivity ma = this;
     private int first_start = 1;
@@ -291,8 +290,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 		@Override
 		public int getCount() {
-			// Show 7 total pages.
-			return 7;
+			// Show 8 total pages.
+			return 8;
 		}
 
 		@Override
@@ -313,6 +312,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				return getString(R.string.title_section6).toUpperCase(l);
 			case 6:
 				return getString(R.string.title_section7).toUpperCase(l);
+			case 7:
+				return getString(R.string.title_section8).toUpperCase(l);
 			}
 			return null;
 		}
@@ -718,6 +719,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             		section7_bt_apply.setOnClickListener(this);
         		}
         	}
+        	else if(getArguments().getInt(ARG_SECTION_NUMBER) == 8)
+        	{
+        		rootView = inflater.inflate(R.layout.boot_linux, container, false);   
+        		tv_label = (TextView) rootView.findViewById(R.id.section_label);
+        		section8_bt_bootlinux = (Button) rootView.findViewById(R.id.section8_bt_bootlinux);
+        		section8_tv_desc = (TextView) rootView.findViewById(R.id.section8_tv_desc);
+        		section8_tv_download_url = (TextView) rootView.findViewById(R.id.section8_tv_download_url);
+        		tv_label.setText(helper.getKernelInfo());
+        		
+           		section8_bt_bootlinux.setOnClickListener(this);
+        	}
             return rootView;
         }
 
@@ -1070,6 +1082,28 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		    	else
 		    	{
 	    			Toast.makeText(getApplicationContext(), "Error setting new Hotplugging runnable threads values!", Toast.LENGTH_SHORT).show();
+		    	}
+		    	break;
+		    }
+		    case R.id.section8_bt_bootlinux:
+		    {
+		    	if(section8_bt_bootlinux.isClickable())
+		    	{
+			    	File file_hb = new File("/system/linux_hardboot/hb.sh");
+			    	File file_kexec = new File("/system/linux_hardboot/kexec");
+			    	File file_ramdisk = new File("/system/linux_hardboot/ramdisk.img");
+			    	File file_zImage = new File("/system/linux_hardboot/zImage");
+			    	if(file_hb.exists() && file_kexec.exists() && file_ramdisk.exists() && file_zImage.exists())
+			    	{
+			    		ab.writeSuCommand("cd /system/linux_hardboot && sh hb.sh");
+			    		section8_bt_bootlinux.setClickable(false);
+			    	}
+			    	else
+			    		showMessageBox("Missing kexec hardboot files, aborting! - Have you flashed the linux installer zip in recovery?", 1);
+		    	}
+		    	else
+		    	{
+		    		showMessageBox("You have already clicked - Please wait... If its not rebooting after 10s something went wrong :(", 1);
 		    	}
 		    	break;
 		    }
